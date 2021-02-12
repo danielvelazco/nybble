@@ -2,11 +2,13 @@ import Pages.LeviMainPage;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -17,12 +19,21 @@ public class LeviMainPageTest {
     private final int explicitTimeout = 10000;
 
     @BeforeClass
-    public void setup() {
-        System.setProperty("webdriver.chrome.driver", ".\\bin\\chromedriver.exe");
-        driver = new ChromeDriver();
+    @Parameters({"app", "browser"})
+    public void setup(String app, String browser) {
+
+        if(browser.equals("firefox")){
+            System.setProperty("webdriver.gecko.driver", ".\\bin\\geckodriver.exe");
+            driver = new FirefoxDriver();
+        } else if (browser.equals("chrome")) {
+            System.setProperty("webdriver.chrome.driver", ".\\bin\\chromedriver.exe");
+            driver = new ChromeDriver();
+        }
+
+
         driver.manage().timeouts().implicitlyWait(implicitTimeout, TimeUnit.SECONDS);
         driver.manage().window().maximize();
-        driver.get("https://www.levi.com.ar/");
+        driver.get(app);
     }
 
     @Test
