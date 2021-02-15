@@ -1,5 +1,6 @@
 import io.restassured.RestAssured;
 import io.restassured.http.Method;
+import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
 import io.restassured.response.ResponseBody;
 import io.restassured.specification.RequestSpecification;
@@ -14,16 +15,19 @@ public class ReqresApiTest {
     @Test // GET request
     public void GetSingleUser()
     {
-        // Regular style
-        // Base endpoint
-        RestAssured.baseURI = "https://reqres.in";
-        // Request specifications
-        RequestSpecification httpRequest = given();
-        // Request and response
-        Response response = httpRequest.request(Method.GET, "/api/users/2");
+        Response response = reqSpec().request(Method.GET, "/api/users/2");
         int statusCode = response.getStatusCode();
-        //Assert status code of the request
+        // Assert status code of the request
         Assert.assertEquals(statusCode, 200, "Wrong status code");
+
+        // Assert part of the body
+        String expectedFirstName = "Janet";
+        String expectedUrl = "https://reqres.in/#support-heading";
+        JsonPath jsonResponse = response.jsonPath();
+        String actualFirstName = jsonResponse.get("data.first_name");
+        String actualUrl = jsonResponse.get("support.url");
+        Assert.assertEquals(actualFirstName, expectedFirstName, "First Name doesn't match");
+        Assert.assertEquals(actualUrl, expectedUrl, "Url doesn't match");
 
         // BDD style using path param
         String url = "https://reqres.in/api/users/";
@@ -53,16 +57,15 @@ public class ReqresApiTest {
     @Test // POST request sending body
     public void CreateUser() {
         {
-            RestAssured.baseURI = "https://reqres.in";
-            RequestSpecification request = RestAssured.given();
+            RequestSpecification request = reqSpec();
 
             JSONObject requestParams = new JSONObject();
             requestParams.put("name", "daniel");
             requestParams.put("job", "tester");
-            request.body(requestParams.toJSONString());
-            Response response = request.post("/api/users");
-            System.out.println(response.asString());
+
+            Response response = request.body(requestParams.toJSONString()).post("/api/users");
             int statusCode = response.getStatusCode();
+            // Assert status code of the request
             Assert.assertEquals(statusCode, 201);
 
             ResponseBody body = response.getBody();
@@ -95,14 +98,16 @@ public class ReqresApiTest {
 
     @Test // DELETE request
     public void DeleteUser() {
-        RestAssured.baseURI = "https://reqres.in";
-        // Request specifications
-        RequestSpecification httpRequest = given();
-        // Request and response
-        Response response = httpRequest.request(Method.DELETE, "/api/users/2");
+        Response response = reqSpec().request(Method.DELETE, "/api/users/2");
         int statusCode = response.getStatusCode();
         //Assert status code of the request
         Assert.assertEquals(statusCode, 204, "Wrong status code");
+    }
+
+    public static RequestSpecification reqSpec() {
+        RestAssured.baseURI = "https://reqres.in";
+        RequestSpecification httpRequest = given();
+        return httpRequest;
     }
 
 }
