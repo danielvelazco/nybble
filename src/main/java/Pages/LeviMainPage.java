@@ -37,6 +37,7 @@ public class LeviMainPage {
     @FindBy(id = "search")
     public WebElement inp_search;
 
+
     public String lnk_sale = "//li[@id='cat-sale']//div//a";
     public String lnk_footer = "//footer//li//a";
 

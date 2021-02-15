@@ -1,4 +1,5 @@
 import Pages.LeviMainPage;
+import Pages.MalePage;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -104,8 +105,9 @@ public class LeviMainPageTest {
     }
 
     @Test(priority = 4)
-    public void jsExecutorTest() {
+    public void jsExecutorTest() throws InterruptedException {
         LeviMainPage leviMainPage = new LeviMainPage(driver);
+        MalePage malePage = new MalePage(driver);
         JavascriptExecutor js = (JavascriptExecutor)driver;
 
         // Fetching the Domain Name of the site
@@ -136,6 +138,8 @@ public class LeviMainPageTest {
 
         //Navigate to new Page
         js.executeScript("window.location = 'https://www.levi.com.ar/e-shop/hombres.html'");
+        wait.until(ExpectedConditions.visibilityOf(malePage.navbar));
+        //Thread.sleep(3000);
         // Fetching the URL of the page
         String expectedNewUrl = "https://www.levi.com.ar/e-shop/hombres.html";
         String actualNewUrl = js.executeScript("return document.URL;").toString();
