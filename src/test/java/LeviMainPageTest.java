@@ -7,16 +7,14 @@ import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
-import org.testng.annotations.AfterClass;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.Parameters;
-import org.testng.annotations.Test;
+import org.testng.annotations.*;
+
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class LeviMainPageTest {
     WebDriver driver;
-    private final int implicitTimeout = 20000;
+    private final int implicitTimeout = 10000;
     private final int explicitTimeout = 10000;
 
     @BeforeClass
@@ -34,9 +32,10 @@ public class LeviMainPageTest {
         driver.manage().timeouts().implicitlyWait(implicitTimeout, TimeUnit.SECONDS);
         driver.manage().window().maximize();
         driver.get(app);
+
     }
 
-    @Test
+    @Test(priority = 1)
     public void InteractionsOverLeviMainPage() {
 
         // Links and buttons from Sale menu
@@ -58,7 +57,11 @@ public class LeviMainPageTest {
             Assert.assertEquals(actualLinksAndButtonNames.get(i).getText(), expectedButtonNames[i], "Button names doesn't match");
         }
 
-        // Footer test
+    }
+
+    @Test(priority = 2)
+    public void footerTest() {
+        LeviMainPage leviMainPage = new LeviMainPage(driver);
         String[] expectedFooterLinks = {
                 "https://www.levi.com.ar/ayuda/#faq","https://www.levi.com.ar/ayuda/#faq","https://www.levi.com.ar/ayuda/", "https://www.levi.com.ar/ayuda/#envios",
                 "https://www.levi.com.ar/ayuda/#pagos","https://www.levi.com.ar/ayuda/#cambios","https://www.levi.com.ar/promociones/","https://www.levi.com.ar/centro-de-ayuda/",
@@ -77,8 +80,11 @@ public class LeviMainPageTest {
             // Assert footer links
             Assert.assertEquals(actualFooterLinks.get(i).getAttribute("href"), expectedFooterLinks[i], "Footer links doesn't match");
         }
+    }
 
-        // Close popups
+    @Test(priority = 3)
+    public void closePopups() {
+        LeviMainPage leviMainPage = new LeviMainPage(driver);
         try {
             // Close newsletter
             WebDriverWait wait = new WebDriverWait(driver, explicitTimeout);
@@ -95,19 +101,51 @@ public class LeviMainPageTest {
         // Check if popups aren't in the page any more
         Assert.assertFalse(leviMainPage.popup_newsletter.isDisplayed());
         Assert.assertFalse(leviMainPage.promo_header.isDisplayed());
-
     }
 
-    @Test
+    @Test(priority = 4)
     public void JsExecutorTest() {
+        LeviMainPage leviMainPage = new LeviMainPage(driver);
         JavascriptExecutor js = (JavascriptExecutor)driver;
-        //Fetching the Domain Name of the site. Tostring() change object to name.
-        String DomainName = js.executeScript("return document.domain;").toString();
-        System.out.println("Domain name of the site = "+DomainName);
+
+        // Fetching the Domain Name of the site
+        String expectedDomain = "www.levi.com.ar";
+        String actualDomainName = js.executeScript("return document.domain;").toString();
+        Assert.assertEquals(actualDomainName, expectedDomain, "Invalid domain name");
+
+        // Scroll down
+        js.executeScript("window.scrollBy(0,2000)");
+        WebDriverWait wait = new WebDriverWait(driver, explicitTimeout);
+        wait.until(ExpectedConditions.elementToBeClickable(leviMainPage.btn_toTop));
+
+        // Click on web element
+        js.executeScript("arguments[0].click();", leviMainPage.btn_toTop);
+        // Wait until toTop button disappear again
+        wait.until(ExpectedConditions.invisibilityOf(leviMainPage.btn_toTop));
+        Assert.assertFalse(leviMainPage.btn_toTop.isDisplayed());
+
+        // Type some text
+        js.executeScript ("document.getElementById('search').innerText='Jeans';" +
+                            "document.getElementById('search').value='Jeans';");
+        Assert.assertEquals(leviMainPage.inp_search.getText(), "Jeans", "Wrong value in search input");
+
+        // Clear input text
+        js.executeScript ("document.getElementById('search').innerText='';" +
+                            "document.getElementById('search').value='';");
+        Assert.assertEquals(leviMainPage.inp_search.getText(), "", "Search input is not clear");
+
+        //Navigate to new Page
+        js.executeScript("window.location = 'https://www.levi.com.ar/e-shop/hombres.html'");
+        // Fetching the URL of the page
+        String expectedNewUrl = "https://www.levi.com.ar/e-shop/hombres.html";
+        String actualNewUrl = js.executeScript("return document.URL;").toString();
+        Assert.assertEquals(actualNewUrl, expectedNewUrl, "Invalid new URL");
+
     }
 
     @AfterClass
     public void close() {
         driver.close();
+
     }
 }

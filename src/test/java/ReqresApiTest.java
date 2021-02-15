@@ -12,6 +12,12 @@ import static io.restassured.RestAssured.given;
 
 public class ReqresApiTest {
 
+    public static RequestSpecification reqSpec() {
+        RestAssured.baseURI = "https://reqres.in";
+        RequestSpecification httpRequest = given();
+        return httpRequest;
+    }
+
     @Test // GET request
     public void GetSingleUser()
     {
@@ -102,12 +108,6 @@ public class ReqresApiTest {
         int statusCode = response.getStatusCode();
         //Assert status code of the request
         Assert.assertEquals(statusCode, 204, "Wrong status code");
-    }
-
-    public static RequestSpecification reqSpec() {
-        RestAssured.baseURI = "https://reqres.in";
-        RequestSpecification httpRequest = given();
-        return httpRequest;
     }
 
 }
