@@ -36,7 +36,7 @@ public class LeviMainPageTest {
     }
 
     @Test(priority = 1)
-    public void InteractionsOverLeviMainPage() {
+    public void saleMenuTest() {
 
         // Links and buttons from Sale menu
         String[] expectedButtonNames = {
@@ -104,7 +104,7 @@ public class LeviMainPageTest {
     }
 
     @Test(priority = 4)
-    public void JsExecutorTest() {
+    public void jsExecutorTest() {
         LeviMainPage leviMainPage = new LeviMainPage(driver);
         JavascriptExecutor js = (JavascriptExecutor)driver;
 
