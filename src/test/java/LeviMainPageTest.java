@@ -1,4 +1,5 @@
 import Pages.LeviMainPage;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -29,7 +30,6 @@ public class LeviMainPageTest {
             System.setProperty("webdriver.chrome.driver", ".\\bin\\chromedriver.exe");
             driver = new ChromeDriver();
         }
-
 
         driver.manage().timeouts().implicitlyWait(implicitTimeout, TimeUnit.SECONDS);
         driver.manage().window().maximize();
@@ -98,8 +98,16 @@ public class LeviMainPageTest {
 
     }
 
+    @Test
+    public void JsExecutorTest() {
+        JavascriptExecutor js = (JavascriptExecutor)driver;
+        //Fetching the Domain Name of the site. Tostring() change object to name.
+        String DomainName = js.executeScript("return document.domain;").toString();
+        System.out.println("Domain name of the site = "+DomainName);
+    }
+
     @AfterClass
     public void close() {
-        driver.quit();
+        driver.close();
     }
 }

@@ -2,10 +2,16 @@
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
 <suite name="All Test Suite">
     <parameter name="app" value="https://www.levi.com.ar/"/>
-    <parameter name="browser" value="firefox"/>
+    <parameter name="browser" value="chrome"/>
     <test verbose="2" preserve-order="true" name="LeviMainPageTest.java">
         <classes>
             <class name="LeviMainPageTest"></class>
+        </classes>
+    </test>
+
+    <test verbose="2" preserve-order="true" name="ReqresApiTest.java">
+        <classes>
+            <class name="ReqresApiTest"></class>
         </classes>
     </test>
 </suite>
